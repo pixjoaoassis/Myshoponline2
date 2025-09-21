@@ -1,0 +1,313 @@
+/* ARQUIVO: style.css */
+
+/* -------------------
+   1. VARIÁVEIS E RESET
+   ------------------- */
+:root {
+    --cor-primaria: #3B82F6; /* Azul moderno */
+    --cor-primaria-hover: #2563EB;
+    --cor-texto: #1F2937; /* Cinza escuro */
+    --cor-texto-suave: #6B7280; /* Cinza claro */
+    --cor-fundo: #F9FAFB;
+    --cor-superficie: #FFFFFF;
+    --cor-borda: #E5E7EB;
+    --cor-sucesso: #10B981;
+    
+    --sombra-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --sombra-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --sombra-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    
+    --font-principal: 'Inter', sans-serif;
+    --font-destaque: 'Poppins', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-principal);
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+}
+
+.container {
+    width: 90%;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+/* -------------------
+   2. CABEÇALHO
+   ------------------- */
+.main-header {
+    background-color: var(--cor-superficie);
+    box-shadow: var(--sombra-md);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding-top: 1rem;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.logo {
+    font-family: var(--font-destaque);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cor-primaria);
+    text-decoration: none;
+}
+
+.search-bar {
+    flex-grow: 1;
+    position: relative;
+    max-width: 500px;
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    color: var(--cor-texto-suave);
+}
+
+#search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    border-radius: 2rem;
+    border: 1px solid var(--cor-borda);
+    background-color: var(--cor-fundo);
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#search-input:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+}
+
+.action-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--cor-texto-suave);
+    position: relative;
+    padding: 0.5rem;
+    transition: color 0.2s;
+}
+
+.action-button:hover {
+    color: var(--cor-texto);
+}
+
+.count-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--cor-primaria);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* -------------------
+   3. NAVEGAÇÃO DE CATEGORIAS
+   ------------------- */
+.category-nav {
+    border-top: 1px solid var(--cor-borda);
+}
+
+#category-container {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+}
+
+#category-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
+.category-button {
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--cor-borda);
+    border-radius: 2rem;
+    background-color: var(--cor-superficie);
+    color: var(--cor-texto-suave);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease-in-out;
+}
+
+.category-button:hover {
+    background-color: #F3F4F6;
+    color: var(--cor-texto);
+}
+
+.category-button.active {
+    background-color: var(--cor-primaria);
+    color: white;
+    border-color: var(--cor-primaria);
+}
+
+/* -------------------
+   4. CONTEÚDO PRINCIPAL E PRODUTOS
+   ------------------- */
+.main-content {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+}
+
+.section-title {
+    font-family: var(--font-destaque);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.product-card {
+    background-color: var(--cor-superficie);
+    border-radius: 0.75rem;
+    box-shadow: var(--sombra-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-lg);
+}
+
+.product-image-wrapper {
+    background-color: #F3F4F6;
+    padding: 1rem;
+}
+
+.product-image {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    display: block;
+}
+
+.product-info {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.product-category {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--cor-texto-suave);
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.product-name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    flex-grow: 1; /* Faz o nome preencher o espaço */
+    line-height: 1.4;
+}
+
+.product-price-wrapper {
+    margin-bottom: 1rem;
+}
+
+.product-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cor-texto);
+}
+
+.add-to-cart-button {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: none;
+    background-color: var(--cor-primaria);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.add-to-cart-button:hover {
+    background-color: var(--cor-primaria-hover);
+}
+
+/* -------------------
+   5. RODAPÉ
+   ------------------- */
+.site-footer {
+    background-color: var(--cor-superficie);
+    border-top: 1px solid var(--cor-borda);
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 2rem;
+    color: var(--cor-texto-suave);
+    font-size: 0.9rem;
+}
+
+/* -------------------
+   6. RESPONSIVIDADE
+   ------------------- */
+@media (max-width: 768px) {
+    .header-container {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .search-bar {
+        order: 3; /* Coloca a busca por último */
+        width: 100%;
+        max-width: none;
+    }
+    .logo { order: 1; }
+    .header-actions { order: 2; }
+    
+    .section-title { font-size: 1.75rem; }
+    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .product-name { font-size: 0.9rem; }
+    .product-price { font-size: 1.25rem; }
+}

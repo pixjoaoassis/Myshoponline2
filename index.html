@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyShop Online - Eletrônicos e Acessórios</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Ícones (Font Awesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fontes do Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container header-container">
+            <a href="#" class="logo">MyShop Online</a>
+            
+            <div class="search-bar">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="search-input" placeholder="Buscar produtos...">
+            </div>
+            
+            <div class="header-actions">
+                <button id="cart-button" class="action-button">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count" class="count-badge">0</span>
+                </button>
+            </div>
+        </div>
+        
+        <nav class="category-nav">
+            <div class="container" id="category-container">
+                <!-- As categorias serão inseridas aqui pelo JavaScript -->
+                <button class="category-button active">Todos</button>
+                <button class="category-button">Celulares</button>
+                <button class="category-button">Fones</button>
+                <button class="category-button">Carregadores</button>
+                <button class="category-button">Cabos</button>
+                <button class="category-button">Periféricos</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container main-content">
+        <h2 class="section-title">Destaques</h2>
+        
+        <div id="product-grid" class="product-grid">
+            <!-- Os produtos serão inseridos aqui pelo JavaScript -->
+            <!-- Exemplo de como um card de produto será: -->
+            <div class="product-card">
+                <div class="product-image-wrapper">
+                    <img src="https://via.placeholder.com/300x300/EFEFEF/AAAAAA?text=Produto" alt="Nome do Produto" class="product-image">
+                </div>
+                <div class="product-info">
+                    <span class="product-category">Categoria</span>
+                    <h3 class="product-name">Nome do Produto Exemplo</h3>
+                    <div class="product-price-wrapper">
+                        <span class="product-price">R$ 199,90</span>
+                    </div>
+                    <button class="add-to-cart-button">
+                        <i class="fas fa-cart-plus"></i> Adicionar
+                    </button>
+                </div>
+            </div>
+            <!-- Fim do exemplo -->
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2025 MyShop Online. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+
+</body>
+</html>

@@ -20,7 +20,7 @@
 
     <header class="main-header">
         <div class="container header-container">
-            <a href="#" class="logo">MyShop Online</a>
+            <a href="index.html" class="logo">MyShop Online</a>
             
             <div class="search-bar">
                 <i class="fas fa-search search-icon"></i>
@@ -46,10 +46,31 @@
         <h2 id="section-title" class="section-title">Destaques</h2>
         
         <div id="product-grid" class="product-grid">
-            <!-- Os produtos serão inseridos aqui pelo JavaScript -->
             <p id="loading-message">Carregando produtos...</p>
         </div>
     </main>
+
+    <!-- MODAL DO CARRINHO (Inicialmente escondido) -->
+    <div id="cart-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-shopping-cart"></i> Meu Carrinho</h3>
+                <button id="close-cart-btn" class="close-btn">&times;</button>
+            </div>
+            <div id="cart-items-container" class="modal-body">
+                <!-- Itens do carrinho serão inseridos aqui -->
+            </div>
+            <div class="modal-footer">
+                <div class="cart-summary">
+                    <span>Total:</span>
+                    <strong id="cart-total-price">R$ 0,00</strong>
+                </div>
+                <button id="finalize-order-btn" class="btn btn-primary btn-full">
+                    <i class="fab fa-whatsapp"></i> Finalizar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
 
     <footer class="site-footer">
         <div class="container">
@@ -57,15 +78,11 @@
         </div>
     </footer>
 
-    <!-- ===================================================== -->
-    <!-- SCRIPTS DO FIREBASE (NECESSÁRIOS PARA CONECTAR AO BD) -->
-    <!-- ===================================================== -->
+    <!-- SCRIPTS DO FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
-    <!-- ===================================================== -->
-    <!-- SCRIPTS DA APLICAÇÃO                                  -->
-    <!-- ===================================================== -->
+    <!-- SCRIPTS DA APLICAÇÃO -->
     <script src="config.js"></script>
     <script src="app.js"></script>
 

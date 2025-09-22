@@ -1,4 +1,4 @@
-// ARQUIVO: app.js (ATUALIZADO PARA CARREGAR O LOGO)
+// ARQUIVO: app.js (COM BUSCA INTELIGENTE)
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -14,9 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sectionTitle = document.getElementById('section-title');
     const loadingMessage = document.getElementById('loading-message');
     const searchInput = document.getElementById('search-input');
-    const logoImages = document.querySelectorAll('.logo-image'); // Seleciona todas as imagens de logo
+    const logoImages = document.querySelectorAll('.logo-image');
     
-    // Elementos do Carrinho
     const cartButton = document.getElementById('cart-button');
     const cartModal = document.getElementById('cart-modal');
     const closeCartBtn = document.getElementById('close-cart-btn');
@@ -43,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (settingsDoc.exists) {
                 storeSettings = settingsDoc.data();
-                // ATUALIZA O LOGO DINAMICAMENTE
                 if (storeSettings.logoUrl) {
                     logoImages.forEach(img => img.src = storeSettings.logoUrl);
                 }
@@ -107,35 +105,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 5. LÓGICA DE FILTRO E BUSCA ---
+    // --- 5. LÓGICA DE FILTRO E BUSCA (ATUALIZADA) ---
 
     function handleCategoryClick(category, clickedButton) {
         document.querySelectorAll('.category-button').forEach(btn => btn.classList.remove('active'));
         clickedButton.classList.add('active');
-        searchInput.value = '';
+        searchInput.value = ''; // Limpa a busca ao clicar na categoria
 
         const productsToRender = category === 'Todos' ? allProducts : allProducts.filter(p => p.category === category);
         renderProducts(productsToRender);
         sectionTitle.textContent = category;
     }
 
+    // Evento 'input' dispara a cada letra digitada
     searchInput.addEventListener('input', () => {
-        const searchTerm = searchInput.value.toLowerCase();
+        const searchTerm = searchInput.value.trim().toLowerCase();
+
+        // Se a busca estiver vazia, volta para a categoria "Todos"
+        if (searchTerm === '') {
+            handleCategoryClick('Todos', document.querySelector('.category-button'));
+            return;
+        }
+
         const filteredProducts = allProducts.filter(p => 
             p.name.toLowerCase().includes(searchTerm) || 
             p.category.toLowerCase().includes(searchTerm)
         );
+        
         renderProducts(filteredProducts);
-        sectionTitle.textContent = searchTerm ? `Resultados para "${searchTerm}"` : 'Todos os Produtos';
+        sectionTitle.textContent = `Resultados para "${searchInput.value}"`;
+        
+        // Desmarca qualquer botão de categoria ativo, pois a busca tem prioridade
         document.querySelectorAll('.category-button').forEach(btn => btn.classList.remove('active'));
     });
 
     // --- 6. LÓGICA DO CARRINHO ---
+    // (Nenhuma alteração nesta seção)
 
     function addToCart(productId) {
         const product = allProducts.find(p => p.id === productId);
         if (!product) return;
-
         const cartItem = cart.find(item => item.id === productId);
         if (cartItem) {
             cartItem.quantity++;
@@ -148,7 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function changeQuantity(productId, change) {
         const cartItem = cart.find(item => item.id === productId);
         if (!cartItem) return;
-
         cartItem.quantity += change;
         if (cartItem.quantity <= 0) {
             cart = cart.filter(item => item.id !== productId);
@@ -158,13 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateCartDisplay() {
         localStorage.setItem('myShopCart', JSON.stringify(cart));
-        
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
         const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
         cartCount.textContent = totalItems;
         cartTotalPrice.textContent = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
-
         if (cart.length === 0) {
             cartItemsContainer.innerHTML = '<p class="empty-cart-message">Seu carrinho está vazio.</p>';
         } else {
@@ -207,14 +212,12 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('O número de WhatsApp da loja não está configurado. Não é possível finalizar o pedido.');
             return;
         }
-
         let message = "*Olá! Gostaria de fazer um pedido pela MyShop Online:*\n\n";
         cart.forEach(item => {
             message += `*${item.quantity}x* - ${item.name}\n`;
         });
         const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
         message += `\n*Total:* R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
-
         const whatsappUrl = `https://api.whatsapp.com/send?phone=${storeSettings.whatsappNumber}&text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
     }

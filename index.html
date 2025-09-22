@@ -38,38 +38,16 @@
         <nav class="category-nav">
             <div class="container" id="category-container">
                 <!-- As categorias serão inseridas aqui pelo JavaScript -->
-                <button class="category-button active">Todos</button>
-                <button class="category-button">Celulares</button>
-                <button class="category-button">Fones</button>
-                <button class="category-button">Carregadores</button>
-                <button class="category-button">Cabos</button>
-                <button class="category-button">Periféricos</button>
             </div>
         </nav>
     </header>
 
     <main class="container main-content">
-        <h2 class="section-title">Destaques</h2>
+        <h2 id="section-title" class="section-title">Destaques</h2>
         
         <div id="product-grid" class="product-grid">
             <!-- Os produtos serão inseridos aqui pelo JavaScript -->
-            <!-- Exemplo de como um card de produto será: -->
-            <div class="product-card">
-                <div class="product-image-wrapper">
-                    <img src="https://via.placeholder.com/300x300/EFEFEF/AAAAAA?text=Produto" alt="Nome do Produto" class="product-image">
-                </div>
-                <div class="product-info">
-                    <span class="product-category">Categoria</span>
-                    <h3 class="product-name">Nome do Produto Exemplo</h3>
-                    <div class="product-price-wrapper">
-                        <span class="product-price">R$ 199,90</span>
-                    </div>
-                    <button class="add-to-cart-button">
-                        <i class="fas fa-cart-plus"></i> Adicionar
-                    </button>
-                </div>
-            </div>
-            <!-- Fim do exemplo -->
+            <p id="loading-message">Carregando produtos...</p>
         </div>
     </main>
 
@@ -79,7 +57,16 @@
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- ===================================================== -->
+    <!-- SCRIPTS DO FIREBASE (NECESSÁRIOS PARA CONECTAR AO BD) -->
+    <!-- ===================================================== -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- ===================================================== -->
+    <!-- SCRIPTS DA APLICAÇÃO                                  -->
+    <!-- ===================================================== -->
+    <script src="config.js"></script>
     <script src="app.js"></script>
 
 </body>

@@ -1,4 +1,4 @@
-// ARQUIVO: app.js
+// ARQUIVO: app.js (ATUALIZADO PARA CARREGAR O LOGO)
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sectionTitle = document.getElementById('section-title');
     const loadingMessage = document.getElementById('loading-message');
     const searchInput = document.getElementById('search-input');
+    const logoImages = document.querySelectorAll('.logo-image'); // Seleciona todas as imagens de logo
     
     // Elementos do Carrinho
     const cartButton = document.getElementById('cart-button');
@@ -33,18 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadInitialData() {
         try {
-            // Carrega produtos e configurações em paralelo
             const [productsSnapshot, settingsDoc] = await Promise.all([
                 db.collection('products').orderBy('name').get(),
                 db.collection('settings').doc('store').get()
             ]);
 
-            // Processa os produtos
             allProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             
-            // Processa as configurações
             if (settingsDoc.exists) {
                 storeSettings = settingsDoc.data();
+                // ATUALIZA O LOGO DINAMICAMENTE
+                if (storeSettings.logoUrl) {
+                    logoImages.forEach(img => img.src = storeSettings.logoUrl);
+                }
             }
 
             if (loadingMessage) loadingMessage.style.display = 'none';

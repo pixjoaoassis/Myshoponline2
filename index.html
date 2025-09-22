@@ -5,22 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyShop Online - Eletrônicos e Acessórios</title>
     
-    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
-    
-    <!-- Ícones (Font Awesome) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Fontes do Google -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <header class="main-header">
         <div class="container header-container">
-            <a href="index.html" class="logo">MyShop Online</a>
+            <!-- LOGO DA LOJA (IMAGEM) -->
+            <a href="index.html" class="logo-link">
+                <img src="logo.png" alt="MyShop Online Logo" class="logo-image">
+            </a>
             
             <div class="search-bar">
                 <i class="fas fa-search search-icon"></i>
@@ -36,35 +32,31 @@
         </div>
         
         <nav class="category-nav">
-            <div class="container" id="category-container">
-                <!-- As categorias serão inseridas aqui pelo JavaScript -->
-            </div>
+            <div class="container" id="category-container"></div>
         </nav>
     </header>
 
     <main class="container main-content">
         <h2 id="section-title" class="section-title">Destaques</h2>
-        
         <div id="product-grid" class="product-grid">
             <p id="loading-message">Carregando produtos...</p>
         </div>
     </main>
 
-    <!-- MODAL DO CARRINHO (Inicialmente escondido) -->
+    <!-- MODAL DO CARRINHO -->
     <div id="cart-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-shopping-cart"></i> Meu Carrinho</h3>
                 <button id="close-cart-btn" class="close-btn">&times;</button>
             </div>
-            <div id="cart-items-container" class="modal-body">
-                <!-- Itens do carrinho serão inseridos aqui -->
-            </div>
+            <div id="cart-items-container" class="modal-body"></div>
             <div class="modal-footer">
                 <div class="cart-summary">
                     <span>Total:</span>
                     <strong id="cart-total-price">R$ 0,00</strong>
                 </div>
+                <!-- ÍCONE DO WHATSAPP CORRIGIDO (usando fab fa-whatsapp) -->
                 <button id="finalize-order-btn" class="btn btn-primary btn-full">
                     <i class="fab fa-whatsapp"></i> Finalizar Pedido
                 </button>
@@ -78,11 +70,8 @@
         </div>
     </footer>
 
-    <!-- SCRIPTS DO FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    
-    <!-- SCRIPTS DA APLICAÇÃO -->
     <script src="config.js"></script>
     <script src="app.js"></script>
 

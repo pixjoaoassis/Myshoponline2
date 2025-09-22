@@ -1,4 +1,4 @@
-// ARQUIVO: app.js (ATUALIZADO PARA LER DO FIREBASE)
+// ARQUIVO: app.js
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -13,81 +13,72 @@ document.addEventListener('DOMContentLoaded', () => {
     const productGrid = document.getElementById('product-grid');
     const sectionTitle = document.getElementById('section-title');
     const loadingMessage = document.getElementById('loading-message');
+    const searchInput = document.getElementById('search-input');
     
+    // Elementos do Carrinho
+    const cartButton = document.getElementById('cart-button');
+    const cartModal = document.getElementById('cart-modal');
+    const closeCartBtn = document.getElementById('close-cart-btn');
+    const cartItemsContainer = document.getElementById('cart-items-container');
+    const cartCount = document.getElementById('cart-count');
+    const cartTotalPrice = document.getElementById('cart-total-price');
+    const finalizeOrderBtn = document.getElementById('finalize-order-btn');
+
     // --- 3. ESTADO DA APLICAÇÃO ---
-    let allProducts = []; // Array para guardar todos os produtos carregados do BD
+    let allProducts = [];
+    let storeSettings = {};
+    let cart = JSON.parse(localStorage.getItem('myShopCart')) || [];
 
     // --- 4. FUNÇÕES DE CARREGAMENTO E RENDERIZAÇÃO ---
 
-    /**
-     * Carrega todos os produtos da coleção 'products' no Firestore.
-     */
-    async function loadProductsFromFirebase() {
+    async function loadInitialData() {
         try {
-            const snapshot = await db.collection('products').orderBy('name').get();
-            
-            // Transforma os documentos do Firebase em um array de objetos
-            allProducts = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+            // Carrega produtos e configurações em paralelo
+            const [productsSnapshot, settingsDoc] = await Promise.all([
+                db.collection('products').orderBy('name').get(),
+                db.collection('settings').doc('store').get()
+            ]);
 
-            // Esconde a mensagem "Carregando..."
-            if (loadingMessage) {
-                loadingMessage.style.display = 'none';
+            // Processa os produtos
+            allProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            // Processa as configurações
+            if (settingsDoc.exists) {
+                storeSettings = settingsDoc.data();
             }
 
-            renderCategories(); // Cria os botões de categoria
-            renderProducts(allProducts); // Exibe todos os produtos inicialmente
+            if (loadingMessage) loadingMessage.style.display = 'none';
+
+            renderCategories();
+            renderProducts(allProducts);
+            updateCartDisplay();
 
         } catch (error) {
-            console.error("Erro ao carregar produtos do Firebase:", error);
+            console.error("Erro ao carregar dados iniciais:", error);
             productGrid.innerHTML = '<p style="color: red;">Não foi possível carregar os produtos. Verifique a conexão e a configuração do Firebase.</p>';
         }
     }
 
-    /**
-     * Cria e exibe os botões de categoria dinamicamente.
-     */
     function renderCategories() {
-        if (!categoryContainer) return;
+        const categories = ['Todos', ...new Set(allProducts.map(p => p.category))].sort();
+        categoryContainer.innerHTML = '';
 
-        // Extrai categorias únicas do array de produtos e as ordena
-        const categories = [...new Set(allProducts.map(p => p.category))].sort();
-        
-        categoryContainer.innerHTML = ''; // Limpa as categorias estáticas
-
-        // Cria o botão "Todos"
-        const allButton = document.createElement('button');
-        allButton.className = 'category-button active';
-        allButton.textContent = 'Todos';
-        allButton.addEventListener('click', () => handleCategoryClick('Todos', allButton));
-        categoryContainer.appendChild(allButton);
-
-        // Cria um botão para cada categoria
         categories.forEach(category => {
-            const categoryButton = document.createElement('button');
-            categoryButton.className = 'category-button';
-            categoryButton.textContent = category;
-            categoryButton.addEventListener('click', () => handleCategoryClick(category, categoryButton));
-            categoryContainer.appendChild(categoryButton);
+            const button = document.createElement('button');
+            button.className = 'category-button';
+            button.textContent = category;
+            if (category === 'Todos') button.classList.add('active');
+            button.addEventListener('click', () => handleCategoryClick(category, button));
+            categoryContainer.appendChild(button);
         });
     }
 
-    /**
-     * Exibe os produtos na tela.
-     * @param {Array} productsToShow - O array de produtos a ser exibido.
-     */
     function renderProducts(productsToShow) {
-        if (!productGrid) return;
-
-        productGrid.innerHTML = ''; // Limpa a grade de produtos
-
+        productGrid.innerHTML = '';
         if (productsToShow.length === 0) {
-            productGrid.innerHTML = '<p>Nenhum produto encontrado nesta categoria.</p>';
+            productGrid.innerHTML = '<p>Nenhum produto encontrado.</p>';
             return;
         }
-
         productsToShow.forEach(product => {
             const card = document.createElement('div');
             card.className = 'product-card';
@@ -106,35 +97,131 @@ document.addEventListener('DOMContentLoaded', () => {
                     </button>
                 </div>
             `;
+            card.querySelector('.add-to-cart-button').addEventListener('click', (e) => {
+                const productId = e.currentTarget.dataset.id;
+                addToCart(productId);
+            });
             productGrid.appendChild(card);
         });
     }
 
-    // --- 5. LÓGICA DE INTERAÇÃO ---
+    // --- 5. LÓGICA DE FILTRO E BUSCA ---
 
-    /**
-     * Lida com o clique em um botão de categoria, filtrando os produtos.
-     * @param {string} category - A categoria selecionada.
-     * @param {HTMLElement} clickedButton - O botão que foi clicado.
-     */
     function handleCategoryClick(category, clickedButton) {
-        // Atualiza a classe 'active' nos botões
-        const allButtons = categoryContainer.querySelectorAll('.category-button');
-        allButtons.forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.category-button').forEach(btn => btn.classList.remove('active'));
         clickedButton.classList.add('active');
+        searchInput.value = '';
 
-        // Filtra e exibe os produtos
-        if (category === 'Todos') {
-            renderProducts(allProducts);
-            sectionTitle.textContent = 'Destaques';
+        const productsToRender = category === 'Todos' ? allProducts : allProducts.filter(p => p.category === category);
+        renderProducts(productsToRender);
+        sectionTitle.textContent = category;
+    }
+
+    searchInput.addEventListener('input', () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredProducts = allProducts.filter(p => 
+            p.name.toLowerCase().includes(searchTerm) || 
+            p.category.toLowerCase().includes(searchTerm)
+        );
+        renderProducts(filteredProducts);
+        sectionTitle.textContent = searchTerm ? `Resultados para "${searchTerm}"` : 'Todos os Produtos';
+        document.querySelectorAll('.category-button').forEach(btn => btn.classList.remove('active'));
+    });
+
+    // --- 6. LÓGICA DO CARRINHO ---
+
+    function addToCart(productId) {
+        const product = allProducts.find(p => p.id === productId);
+        if (!product) return;
+
+        const cartItem = cart.find(item => item.id === productId);
+        if (cartItem) {
+            cartItem.quantity++;
         } else {
-            const filteredProducts = allProducts.filter(p => p.category === category);
-            renderProducts(filteredProducts);
-            sectionTitle.textContent = category; // Muda o título da seção
+            cart.push({ ...product, quantity: 1 });
+        }
+        updateCartDisplay();
+    }
+
+    function changeQuantity(productId, change) {
+        const cartItem = cart.find(item => item.id === productId);
+        if (!cartItem) return;
+
+        cartItem.quantity += change;
+        if (cartItem.quantity <= 0) {
+            cart = cart.filter(item => item.id !== productId);
+        }
+        updateCartDisplay();
+    }
+
+    function updateCartDisplay() {
+        localStorage.setItem('myShopCart', JSON.stringify(cart));
+        
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        cartCount.textContent = totalItems;
+        cartTotalPrice.textContent = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = '<p class="empty-cart-message">Seu carrinho está vazio.</p>';
+        } else {
+            cartItemsContainer.innerHTML = '';
+            cart.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item';
+                itemDiv.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                    <div class="cart-item-info">
+                        <p class="cart-item-name">${item.name}</p>
+                        <p class="cart-item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</p>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn decrease-btn" data-id="${item.id}">-</button>
+                        <span class="item-quantity">${item.quantity}</span>
+                        <button class="quantity-btn increase-btn" data-id="${item.id}">+</button>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(itemDiv);
+            });
         }
     }
 
-    // --- 6. INICIALIZAÇÃO ---
-    loadProductsFromFirebase();
+    cartItemsContainer.addEventListener('click', (e) => {
+        const target = e.target;
+        if (target.classList.contains('quantity-btn')) {
+            const productId = target.dataset.id;
+            const change = target.classList.contains('increase-btn') ? 1 : -1;
+            changeQuantity(productId, change);
+        }
+    });
 
+    function finalizeOrder() {
+        if (cart.length === 0) {
+            alert('Seu carrinho está vazio!');
+            return;
+        }
+        if (!storeSettings.whatsappNumber) {
+            alert('O número de WhatsApp da loja não está configurado. Não é possível finalizar o pedido.');
+            return;
+        }
+
+        let message = "*Olá! Gostaria de fazer um pedido pela MyShop Online:*\n\n";
+        cart.forEach(item => {
+            message += `*${item.quantity}x* - ${item.name}\n`;
+        });
+        const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        message += `\n*Total:* R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+
+        const whatsappUrl = `https://api.whatsapp.com/send?phone=${storeSettings.whatsappNumber}&text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    }
+
+    // --- 7. EVENT LISTENERS DO MODAL ---
+    cartButton.addEventListener('click', () => cartModal.classList.remove('hidden'));
+    closeCartBtn.addEventListener('click', () => cartModal.classList.add('hidden'));
+    finalizeOrderBtn.addEventListener('click', finalizeOrder);
+
+    // --- 8. INICIALIZAÇÃO ---
+    loadInitialData();
 });

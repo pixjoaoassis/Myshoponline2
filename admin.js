@@ -1,4 +1,4 @@
-// ARQUIVO: admin.js
+// ARQUIVO: admin.js (ATUALIZADO PARA GERENCIAR O LOGO)
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const productListContainer = document.getElementById('product-list-container');
     const settingsForm = document.getElementById('settings-form');
     const whatsappNumberInput = document.getElementById('whatsapp-number');
+    const logoUrlInput = document.getElementById('store-logo-url'); // Novo campo do logo
+    const logoImages = document.querySelectorAll('.logo-image');
 
     // Elementos do Modal
     const productModal = document.getElementById('product-modal');
@@ -73,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Erro ao carregar produtos: ", error);
             if (error.code === 'failed-precondition') {
-                productListContainer.innerHTML = `<p style="color: red;"><strong>Erro de Índice.</strong> O Firebase precisa de um índice para esta consulta. Crie-o manualmente no painel do Firebase (Firestore > Índices) para a coleção 'products', com os campos 'category' (crescente) e 'name' (crescente).</p>`;
+                productListContainer.innerHTML = `<p style="color: red;"><strong>Erro de Índice.</strong> Crie o índice no Firebase como instruído anteriormente.</p>`;
             } else {
                 productListContainer.innerHTML = `<p style="color: red;">Ocorreu um erro ao carregar os produtos.</p>`;
             }
@@ -82,7 +84,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadSettings() {
         const doc = await db.collection('settings').doc('store').get();
-        if (doc.exists) whatsappNumberInput.value = doc.data().whatsappNumber || '';
+        if (doc.exists) {
+            const settings = doc.data();
+            whatsappNumberInput.value = settings.whatsappNumber || '';
+            logoUrlInput.value = settings.logoUrl || '';
+            // Atualiza o logo no painel admin também
+            if (settings.logoUrl) {
+                logoImages.forEach(img => img.src = settings.logoUrl);
+            }
+        }
     }
 
     // --- LÓGICA DO MODAL (CREATE, UPDATE, DELETE) ---
@@ -157,9 +167,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- SALVAR CONFIGURAÇÕES ---
     settingsForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const settingsData = {
+            whatsappNumber: whatsappNumberInput.value,
+            logoUrl: logoUrlInput.value // Salva a URL do logo
+        };
         try {
-            await db.collection('settings').doc('store').set({ whatsappNumber: whatsappNumberInput.value }, { merge: true });
+            await db.collection('settings').doc('store').set(settingsData, { merge: true });
             alert('Configurações salvas!');
+            // Atualiza o logo na tela imediatamente
+            if (settingsData.logoUrl) {
+                logoImages.forEach(img => img.src = settingsData.logoUrl);
+            }
         } catch (error) {
             alert('Erro ao salvar configurações: ' + error.message);
         }
